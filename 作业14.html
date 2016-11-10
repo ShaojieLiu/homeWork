@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>轮播插件</title>
+        <style media="screen">
+
+        *{
+            /*border: 1px solid black;*/
+        }
+        </style>
+    </head>
+    <body>
+        <div class="imgContainer">
+            <!-- <img class='img' src="img/img1.jpg" alt="" />
+            <img class='img' src="img/img2.jpg" alt="" />
+            <img class='img' src="img/img3.jpg" alt="" />
+            <div class="indicatorArea">
+
+                <img src="img/img1.jpg" class='imgind' alt="" />
+                <img src="img/img2.jpg" class='imgind' alt="" />
+                <img src="img/img3.jpg" class='imgind' alt="" /> -->
+
+                <!-- <div type="button" class='imgind'></div>
+                <div type="button" class='imgind'></div>
+                <div type="button" class='imgind'></div> -->
+
+            <!-- </div>
+            <div class="buttArea">
+                <span type="button" class='imgbutt buttLeft'><</span>
+                <span type="button" class='imgbutt buttRight'>></span>
+            </div> -->
+        </div>
+<script src="http://code.jquery.com/jquery-2.0.0.min.js"></script>
+<script type="text/javascript">
+    var _picTakeTurnShow = function (container, imgArray, waitTime, sizeOfIndicator, shapOfIndicator='img') {
+        var addStyleOfSlide = function (sizeOfIndicator) {
+            var styleOfSlide = `
+                    <style media="screen">
+                    .imgContainer{
+                        position:absolute;
+                        overflow: hidden;
+                        width: 95%;
+                        height:400px;
+                    }
+                    .img{
+                        display: block;
+                        /*width: 100%;*/
+                        height: 100%;
+                        position:absolute;
+                        top:50%;
+                        left:50%;
+                        transform: translateX(-50%) translateY(-50%);
+                    }
+                    .buttArea{
+                        display: inline-block;
+                        position:absolute;
+                        width: 100%;
+                        text-align: center;
+                        top:50%;
+                        left:50%;
+                        transform: translateX(-50%) translateY(-50%);
+                    }
+                    .imgbutt{
+                        font-size: 60px;
+                        line-height: 100%;
+                        color: white;
+                        background-color: rgba(166, 166, 166, 0.52);
+                    }
+                    .buttLeft{
+                        float:left;
+                    }
+                    .buttRight{
+                        float:right;
+                    }
+                    .active{
+                    }
+                    :root{
+                        --height: ${sizeOfIndicator};
+                    }
+                    .indicatorArea{
+                        position: absolute;
+                        height:calc(var(--height));
+                        width: calc(var(--height)*3);
+                        border-radius: calc(var(--height)/2);
+                        display: inline-block;
+                        background-color: rgba(200,200,200, 0.6);
+                        text-align: center;
+                        bottom: 5px;
+                        left:50%;
+                        transform: translateX(-50%);
+                        padding-left:2px;
+                        padding-right:2px;
+                    }
+                    .imgind{
+                        display: block;
+                        position: relative;
+                        top:50%;
+                        transform: translateY(-50%);
+                        // top:calc(0.1*var(--height));
+                        display: inline-block;
+                        background-color: rgb(255, 255, 255);
+                        border-radius: calc(var(--height)/1.2);
+                        width: calc(var(--height)/1.2);
+                        height: calc(var(--height)/1.2);
+                    }
+                    .bgcRed{
+                        background-color: red;
+                        border: 1px solid red;
+                    }
+                    .imgbutt:hover, .imgind:hover{
+                        cursor: pointer;
+                    }
+
+                    </style>`
+            $('head').append(styleOfSlide)
+        }
+        var addPageOfSlide = function (ele, imgArray, shapOfIndicator) {
+            var imgList = ``
+            for (let i in imgArray) {
+                    imgList += `<img class='img' src="${imgArray[i]}" alt="" />`
+                }
+            var indList = ``
+            console.log(shapOfIndicator)
+            if (shapOfIndicator == 'dot') {
+                for (let i in imgArray) {
+                        indList += `<div type="button" class='imgind'></div>`
+                    }
+            }   else if (shapOfIndicator == 'img') {
+                for (let i in imgArray) {
+                        indList += `<img src="${imgArray[i]}" class='imgind' alt="" />`
+                    }
+            }
+            console.log(imgList)
+            var end = `
+                </div>
+                <div class="buttArea">
+                    <span type="button" class='imgbutt buttLeft'><</span>
+                    <span type="button" class='imgbutt buttRight'>></span>
+                </div>`
+            var pageOfSlide = imgList + `<div class="indicatorArea">` + indList + end
+            ele.append(pageOfSlide)
+        }
+        var bondLR = function () {
+            var bondL = function () {
+                $('.buttLeft').on('click', function () {
+                    // console.log('leftClick')
+                    indexImg += indexMax - 1
+                    imgChange()
+                })
+            }
+            var bondR = function () {
+                $('.buttRight').on('click', function () {
+                    // console.log('leftClick')
+                    indexImg += 1
+                    imgChange()
+                })
+            }
+            bondL()
+            bondR()
+        }
+        var bondInd = function () {
+            $('.indicatorArea').on('mouseover', function () {
+                var self = event.target
+                var num = $('.imgind').index(self)
+                if (num != -1 && !self.classList.contains('bgcRed')){
+                    console.log('over')
+                    timeoutID = setTimeout(() => {
+                        indexImg = num
+                        imgChange()
+                    }, 500)
+                }
+            })
+            console.log($('.indicatorArea').children)
+            $('.indicatorArea').children().on('mouseleave', function () {
+                var self = event.target
+                if (!self.classList.contains('bgcRed')) {
+                    clearTimeout(timeoutID)}
+            })
+        }
+        var imgChange = function () {
+            indexImg = indexImg % indexMax
+            $('.active').fadeOut()
+            $('.active').removeClass('active')
+            $($('.img')[indexImg]).addClass('active')
+            $('.active').fadeIn()
+
+            $('.bgcRed').removeClass('bgcRed')
+            $($('.imgind')[indexImg]).addClass('bgcRed')
+        }
+        var bondIO = function () {
+            var showLR = function () {
+                $('.imgbutt').fadeIn()
+                $('.indicatorArea').fadeIn()
+                clearInterval(intervalID)
+            }
+            var hideLR = function () {
+                $('.imgbutt').fadeOut()
+                $('.indicatorArea').fadeOut()
+                intervalID = setInterval(function () {
+                    indexImg++
+                    imgChange()
+                }, waitTime);
+            }
+            $('.imgContainer').hover(showLR, hideLR)
+            $('.indicatorArea').fadeOut(0)
+            $('.imgbutt').fadeOut(0)
+        }
+        var init = function () {
+            indexMax = 3
+            indexImg = indexMax - 1
+            $($('.img')[indexImg]).addClass('active')
+            $($('.imgind')[indexImg]).addClass('bgcRed')
+            $('.img').not('.active').each(function(){
+                $(this).fadeOut(0)
+            })
+            intervalID = setInterval(function () {
+                indexImg++
+                imgChange()
+            }, waitTime);
+        }
+
+        addStyleOfSlide(sizeOfIndicator)
+        addPageOfSlide(container, imgArray, shapOfIndicator)
+        init()
+        bondLR()
+        bondInd()
+        bondIO()
+    }
+    var __main = function () {
+        var container = $('.imgContainer')
+        var imgArray = ["img/img1.jpg","img/img2.jpg","img/img3.jpg"]
+        // 指示器的大小:建议选择150px或者15px
+        var sizeOfIndicator = '150px'
+        // 指示器的形态:img是缩略图, dot是小圆点
+        var shapOfIndicator = 'img'
+        var waitTime = 2000
+
+        _picTakeTurnShow(container, imgArray, waitTime, sizeOfIndicator, shapOfIndicator)
+    }
+    __main()
+</script>
+    </body>
+</html>
+
+<!--
+// 2016/10/17
+//
+// ============
+// 作业 14
+//
+//
+// 本次作业纯属暖身, 随意
+// ============
+//
+
+
+// 作业 1
+//
+// 扩充上课时候做的 slide 库, 添加一个功能, 当鼠标移动到小圆点上的时候, 播放那张图片
+
+
+// 作业 2
+//
+// 扩充上课时候做的 slide 库, 添加一个功能, 当鼠标点击小圆点的时候, 播放那张图片
+
+
+// 作业 3
+//
+// 扩充上课时候做的 slide 库, 添加一个功能
+// 小圆点被一系列缩略图取代
+// 鼠标点击缩略图播放那张图片
+
+
+// 作业 4
+//
+// 用一个函数传递图片 URL 参数来创建一个 slide
+// 函数如下
+var GuaSlide = function(element, images) {
+    /*
+    element 是一个 div 容器, DOM 类型, 创建的 slide 就 append 到这个容器中
+    images 是一个包含了图片地址的 array
+    */
+} -->

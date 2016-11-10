@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>作业8--登录页面</title>
+        <style >
+            .h1 {
+
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-form">
+            <input id="id-input-username" value="请输入用户名" type="text" >
+            <button id="id-button-login" type="button" >登录</button>
+        </div>
+    </body>
+</html>
+<script>
+var log = function() {
+    console.log.apply(console, arguments)
+}
+
+var insertTodo = function(){
+    var todoContainer = document.querySelector('.login-form')
+    var t = `<h1>用户名错误</h1>`
+    todoContainer.insertAdjacentHTML('beforeend', t)
+}
+var loginButton = document.querySelector('#id-button-login')
+var user = document.querySelector('#id-input-username')
+
+loginButton.addEventListener('click',function(){
+var userValue = user.value
+    log(userValue)
+    if (clicked(userValue)) {
+        log('检查合格')
+    }else{
+        insertTodo()
+    }
+})
+
+var clicked = function(userValue) {
+    var w = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    var x = '0123456789'
+    var y = '_'
+    var char = w+x+y
+    var  s = userValue
+    var len = s.length
+    var result = true
+    if (userValue ='') {
+        result = false
+    }
+    if (len < 2||len > 10) {
+        result = false
+    }
+    if (result) {
+        for (var i = 0; i < len; i++) {
+            if (!char.includes(s[i])) {
+                result = false
+            }else if (!w.includes(s[0])) {
+                result = false
+            }else if (!(x+w).includes(s[len-1])) {
+                result = false
+            }else {
+                result = true
+            }
+        }
+    }
+    return result
+}
+
+</script>

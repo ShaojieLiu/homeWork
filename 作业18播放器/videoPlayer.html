@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>音频播放器</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://use.fontawesome.com/7c21822d4d.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <style media="screen">
+            /**{outline: thin dotted red;}*/
+            /*body{
+                padding: 20px;
+            }*/
+            .video{
+                position: relative;
+                text-align: center;
+                /*border: medium solid royalblue;*/
+                /*border-radius: 10px;*/
+                height 100%;
+                width: 100%;
+                background-image: url(res/soft.jpeg);
+                background-size:100% 100%;
+                background-repeat:no-repeat;
+            }
+            video{
+                width: 80%;
+            }
+            .btn{
+                background-color: transparent;
+                border: none;
+                width: 35px;
+                border-radius: 50%;
+            }
+            .btn:hover{
+                opacity: 0.3;
+                color: royalblue;
+            }
+            #play{
+                width: 80px;
+                height: 80px;
+                font-size: 3.5em;
+            }
+            .sliderArea{
+                padding-bottom: 20px;
+                border-bottom: medium solid white;
+                text-shadow: rgba(0, 0, 0, 1) 2px 3px 10px, rgba(255, 255, 255, 0.9) 0px -3px 20px;
+            }
+            .slider-cont{
+                display: inline-block;
+                /*outline: thin solid red;*/
+                width: 70%;
+                margin-top: 20px;
+                position: relative;
+            }
+            .slider, .slider-vol{
+                cursor: pointer;
+                /*outline: thin dotted red;*/
+            }
+            .slider{opacity: 0;}
+            .video span, div{
+                color: rgb(255, 255, 255);
+                /*font-size: 42px;*/
+                /*background-color: rgb(85, 147, 194);*/
+            }
+            #timeshow{
+                /*background-color: royalblue;*/
+                color: white;
+                position: fixed;
+                z-index: 10;
+                text-shadow: rgba(0, 0, 0, 1) 2px 3px 10px, rgba(255, 255, 255, 0.9) 0px -3px 20px;
+            }
+            .slider-vol-cont{
+                display: inline-block;
+                position: relative;
+                top: 5px;
+                width: 50px;
+            }
+            .btnArea, .current{
+                justify-content: space-around;
+                margin-bottom: 5px;
+                display: flex;
+                align-items: center;
+                text-shadow:    rgb(204, 204, 204) 0.25px 1px 0px,
+                                rgb(201, 201, 201) 0.5px 2px 0px,
+                                rgb(187, 187, 187) 0.75px 3px 0px,
+                                rgb(185, 185, 185) 1px 4px 0px,
+                                rgb(170, 170, 170) 1.25px 5px 0px,
+                                rgba(0, 0, 0, 0.0980392) 1.5px 6px 1px,
+                                rgba(0, 0, 0, 0.62) 5px 5px 10px,
+                                rgba(0, 0, 0, 0.82) 5px 5px 30px;
+            }
+            .none{display: none;}
+            range{
+                display: block;
+                position: absolute;
+                bottom: 25%;
+                height: 30%;
+                left:2%;
+                width: 96%;
+                border-radius: 3px;
+                background-color: royalblue;
+                background-image: linear-gradient(90deg, royalblue, purple);
+            }
+            .prog{
+                display: block;
+                background-color: dimgray;
+                height: 100%;
+                position: absolute;
+                border-radius: 3px;
+                right: 0;
+                width: 100%;
+                border-left: medium solid white;
+            }
+            .listbtn-cont{
+                /*position: absolute;*/
+                left: 20px;
+            }
+            .songlist{
+                padding: 5px 30px;
+                z-index: 100;
+            }
+            li{
+                color:rgba(255, 255, 255, 1);
+                padding-left:50px;
+                text-align:left;
+                list-style-type:none;
+                z-index: 0;
+                text-shadow: rgba(0, 0, 0, 1) 0px 0px 15px, rgba(255, 255, 255, 0.9) 0px -3px 20px;
+            }
+            li+li{
+                border-top: thin solid darkgray;
+            }
+            .songlist li:hover{
+                cursor: pointer;
+                color:rgba(255, 255, 255, 1);
+            }
+            .current{
+                padding: 10px;
+                border-top: medium solid white;
+                border-bottom: medium solid white;
+                color: white;
+                font-weight: bolder;
+            }
+            .fa-music{
+                position: absolute;
+                left:50px;
+            }
+        </style>
+    </head>
+    <body>
+<script type="text/javascript">
+    var insertPlayer = function(where) {
+        $(where).append(`
+            <div class="video">
+                <span class="timeshow none" id="timeshow">00:00</span>
+                <div class="controls">
+
+                    <div class="sliderArea">
+                        <span class="time1">_</span>
+                        <div class="slider-cont">
+                            <range>
+                                <div class=prog></div>
+                            </range>
+                            <input class="slider" type="range" name="name" value=0>
+                        </div>
+                        <span class="time2">_</span>
+                    </div>
+                    <video src="" id="videoPlayer" ></video>
+
+                    <ul class=songlist >
+                    </ul>
+                    <div class=current>当前歌曲: 无</div>
+                    <div class="btnArea">
+                        <span class=listbtn-cont>
+                            <span class="btn fa fa-reorder" data-action=toggleList id="menu"></span>
+                            <span class="btn fa fa-sort-amount-asc" data-action=switchMode id="mode"></span>
+                        </span>
+                        <span class="btn fa fa-step-backward" data-action=prev id="prev"></span>
+                            <!-- <span class="btn btn-primary fa fa-backward" id="prev"></span> -->
+                        <i class="btn fa fa-play fa-pause" data-action=switch id="play"></i>
+                            <!-- <span class="btn btn-primary fa fa-forward" id="prev"></span> -->
+                        <span class="btn fa fa-step-forward" data-action=next id="next"></span>
+                        <span class="vol-cont">
+                            <span class="btn fa fa-volume-off fa-volume-up" data-action=toggleMuted id="vol"></span>
+                            <span class="slider-vol-cont">
+                                <input class="slider-vol" type="range" id="slider-vol" value=10>
+                            </span>
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+        `)
+    }
+    var timeformat = function (second) {
+        var fill = function (x) {
+            x = String(x)
+            if (x.length < 2) {
+                return ['0']+x
+            }
+            return x
+        }
+        var min = fill(Math.floor(second / 60))
+        var sec = fill(Math.floor(second % 60))
+        return `${min}:${sec}`
+    }
+    var player = function(givenlist) {
+        this.list = givenlist
+        this.curr = 0
+        this.ele = $('video')
+        this.mode = 'order' //order random replay
+        this.slider = $('.slider')
+        this.volslider = $('.slider-vol')
+    }
+    player.prototype.reload = function() {
+        this.ele[0].src = this.list[this.curr].src
+        $('.songlist li .fa-music').remove()
+        $($('.songlist li')[this.curr]).append(`<span class="fa fa-music"></span>`)
+        // console.log(`reloading`,this,this.list[this.curr].src)
+    }
+    player.prototype.prev = function() {
+        this.curr = (this.curr + this.list.length - 1) % this.list.length
+        this.reload()
+    }
+    player.prototype.next = function() {
+        switch (this.mode) {
+            case 'random':
+                var rand = Math.floor(Math.random() * (this.list.length - 1)) + 1
+                this.curr = (this.curr + rand) % (this.list.length)
+                this.reload()
+                break
+            case 'replay':
+            case 'order':
+            default:
+                this.curr = (this.curr + 1) % this.list.length
+                this.reload()
+        }
+    }
+    player.prototype.toggleMuted = function() {
+        if (!this.ele[0].muted) {
+            $('#vol').removeClass('fa-volume-up')
+        } else {$('#vol').addClass('fa-volume-up')}
+        this.ele[0].muted = !$('#vol').hasClass('fa-volume-up')
+    }
+    player.prototype.update = function() {
+        // console.log('update',this,this.ele[0])
+        var currentTime = this.ele[0].currentTime
+        var duration = this.ele[0].duration
+        $('.slider').val(100 * currentTime / duration)
+        $('.prog').width((100 - $('.slider').val()) / 100 * $('range').width())
+        $('.time1').text(`${timeformat(currentTime)}`)
+        $('.time2').text(`${timeformat(duration)}`)
+        $('.current').text(`CURRENT SONG : ${this.list[this.curr].name}`)
+    }
+    player.prototype.end = function() {
+        switch (this.mode) {
+            case 'random':
+                var rand = Math.floor(Math.random() * (this.list.length - 1)) + 1
+                this.curr = (this.curr + rand) % (this.list.length)
+                this.reload()
+                break
+            case 'replay':
+                this.reload()
+                break
+            case 'order':
+                this.curr = (this.curr + 1) % this.list.length
+                this.reload()
+            default:
+                this.curr = (this.curr + 1) % this.list.length
+                this.reload()
+        }
+    }
+    player.prototype.switchMode = function() {
+        var self = this
+        var list = ['order', 'random', 'replay']
+        var modelist = {
+            random: function() {
+                // self.mode = 'random'
+                $('#mode').addClass('btn fa fa-random')
+            },
+            order: function() {
+                // self.mode = 'order'
+                $('#mode').addClass('btn fa fa-sort-amount-asc')
+            },
+            replay: function() {
+                // self.mode = 'replay'
+                $('#mode').addClass('btn fa fa-refresh')
+            }
+        }
+        $('#mode').removeClass()
+        this.mode = list[(list.indexOf(self.mode) + 1) % list.length]
+        modelist[this.mode]()
+        console.log(self.mode,list.indexOf(self.mode),this.mode)
+    }
+    player.prototype.toggleList = function() {
+        $('.songlist').toggle()}
+    player.prototype.switch = function() {
+        if(!this.ele[0].paused) {
+            $('#play').removeClass('fa-pause')
+            this.ele[0].pause()
+        } else {
+            $('#play').addClass('fa-pause')
+            this.ele[0].play()
+        }
+    }
+    player.prototype.changeTime = function() {
+        this.ele[0].currentTime = this.slider.val() / 100 * this.ele[0].duration
+    }
+    player.prototype.changeVol = function() {
+        console.log('changevol', this)
+        this.ele[0].volume = this.volslider.val() / 100
+    }
+    player.prototype.initPlayer = function () {
+        var self = this
+        var show = $('.timeshow')
+        // initial the list show, time show
+        $(this.list).map(function(){
+            $('.songlist').append(`<li>${this.name}</li>`)
+        })
+        this.slider.hover(
+            function(){show.removeClass('none')},
+            function(){show.addClass('none')
+        })
+        this.slider.on('mousemove', function() {
+            // console.log('mousemove', self)
+            show.offset({top: 3, left: event.clientX + document.body.scrollLeft - 20})
+            var progress = (event.clientX + document.body.scrollLeft - self.slider.offset().left) / self.slider.width() * self.ele[0].duration
+            show.text(timeformat(progress))
+        })
+        // other initial configure
+        this.ele[0].autoplay = true
+        this.ele[0].volume = $('.slider-vol').val() / 100
+        this.reload()
+        // register the main slider
+        this.ele.on('timeupdate', this.update.bind(self))
+        this.slider.on('input', this.changeTime.bind(self))
+        // register the volume slider
+        this.volslider.on('input', this.changeVol.bind(self))
+        // register task when ended
+        this.ele.on('ended', this.end.bind(self))
+        // register the buttons, songlist
+        $('.btnArea').on('click', '.btn', function() {
+            self[event.target.dataset.action]()
+        })
+        $('.songlist').on('click', 'li', function() {
+            self.curr = $('.songlist li').index(event.target)
+            self.reload()
+        })
+    }
+    var __main = function() {
+        insertPlayer('body')
+        var givenlist = [
+                {name:'片头',
+                                src:'video/whtb.mp4'},
+                {name:'大野克夫',
+                                src:'music/大野克夫.mp3'},
+                {name:'今夜月',
+                                src:'music/今夜月.mp3'},
+                {name:'光辉岁月',
+                                src:'music/光辉.mp3'},
+                {name:'泡沫',
+                                src:'music/泡.mp3'},
+                {name:'喜欢你',
+                                src:'music/喜欢.mp3'}
+        ]
+        var p = new player(givenlist)
+        p.initPlayer()
+    }
+    __main()
+</script>
+    </body>
+</html>

@@ -1,0 +1,157 @@
+
+<!-- // 2016/10/19
+//
+// ============
+// 作业 15
+//
+//
+// 本次作业没有提示的地方需要自行搜索
+// 别忘了用 github 管理作业的进度
+// ============
+//
+
+
+
+// 作业 1
+//
+// 实现函数 GuaOptions1, 功能见注释描述
+var GuaOptions1 = function(options) {
+    /*
+    options 是一个包含 string 的数组
+    本函数对每个 string 生成一个复选框和文本
+    append 到 body 中
+    示意图如下
+
+    +-+
+    | | string
+    +-+
+
+    */
+}
+
+
+// 作业 2
+//
+var GuaOptions2 = function(options) {
+    /*
+    options 是一个包含 string 的数组
+	本题和作业 1 一样的功能 只是多了 2 个按钮
+    全选 和 反选
+    */
+}
+
+
+// 作业 3
+//
+var GuaOptions3 = function(options) {
+    /*
+    options 是一个包含如下 object 的数组
+    text 是文本描述
+    checked 是布尔值, 表示是否打勾
+    {
+    	'text': 'string',
+        'checked': true,
+    }
+	本题和作业 2 一样的功能, 但是参数变了
+	并且要求在初始化的时候要按照相应的值对相应的复选框打勾
+    */
+}
+
+
+// 作业 4
+//
+var GuaOptions4 = function(options) {
+    /*
+	本题和作业 3 一样的功能
+    但是多了 2 个按钮 save 和 load
+    save 按钮点击的时候会保存当前的 options 状态到 localStorage(用 JSON)
+    load 按钮点击的时候会从 localStorage 中读取保存的信息并更新界面
+    */
+}
+
+ -->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>作业15</title>
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <div class="checkbox1">
+
+        </div>
+<script src="http://code.jquery.com/jquery-1.4.4.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var GuaOptions1 = function(options) {
+        $('.checkbox1').append(`
+            <h3>逆风后期摸到死亡之翼你会说</h3>
+            <button type="button" class="pure-button btn-save">保存</button>
+            <button type="button" class="pure-button btn-load">读取</button>
+            <br><br>
+            <label><input type="checkbox" class="selectall">
+            全选</label>
+            <label><input type="checkbox" class="selectoppo">
+            反选</label><br><br>`)
+        $(options).map( function () {
+            if (this.checked) {var ischecked = `checked`}
+            else {var ischecked = ''}
+            var template = `
+            <label><input type="checkbox" class="option" value="${this.text}" ${ischecked}>
+            ${this.text}</label><br>`
+            $('.checkbox1').append(template)
+        })
+    }
+    var bondCheck = function () {
+        // for (let j = 0; j < $('input').length; j++) {
+            $('input').click(function () {
+                if (this != $('.selectall')[0]) {$('.selectall').attr("checked", false)}
+                if (this != $('.selectoppo')[0]) {$('.selectoppo').attr("checked", false)}
+                console.log($(event.target), event.target.checked)
+            })
+        // }
+    }
+    var bondSelect = function () {
+        $('.selectall').click(function () {
+            $('.option').attr("checked", this.checked)
+        })
+        $('.selectoppo').click(function () {
+            $('.option').attr("checked", function () {return !this.checked})
+        })
+    }
+    var bondBtn = function () {
+        $('.btn-save').click(function () {
+            console.log('save')
+            // for (let i in template1) {
+                    template1[i].map(this.checked = $('.option')[i].checked)
+                // }
+            localStorage.options = JSON.stringify(template1)
+            console.log(template1)
+        })
+        $('.btn-load').click(function () {
+            console.log('load')
+            $('.checkbox1').empty()
+            var template = JSON.parse(localStorage.options)
+            load(template)
+        })
+    }
+    var load = function (template1) {
+        GuaOptions1(template1)
+        bondCheck()
+        bondSelect()
+        bondBtn()
+    }
+    var __main = function () {
+        template1 =[{text:`打得不错`,          checked:true,},
+                    {text:`你好啊旅行者`,       checked:true,},
+                    {text:`我选择死亡`,         checked:true,},
+                    {text:`你可能会觉得有点痒`,   checked:false,},]
+        load(template1)
+    }
+    __main()
+</script>
+
+    </body>
+</html>

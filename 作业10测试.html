@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <style media="screen">
+            *{
+                border-style: dotted;
+                border-width: thin;
+                margin:5px;
+            }
+            .green {
+                background-color: lightgreen;
+            }
+            .red {
+                background-color: pink;
+            }
+            span{
+                background-color: lightblue;
+            }
+            .yellow {
+                background-color: yellow;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main diuiti">
+            <button type="button" class='butt' name="button">
+                双击我或者我的外面,都看到变黄了,那么恭喜你,<b>十一题</b>对了!
+            </button>
+            <div class="zoye8">甲:当你鼠标在我上面我变绿了,作业8就对了</div>
+            <div class="zoye9">乙:当你点来点去,我变红了,作业9就对了</div>
+            <div>丙:当"作业7"三个字出现在我下面,你就对了</div>
+
+        </div>
+    </body>
+<script src="作业10.js"></script>
+<script type="text/javascript">
+    var log = function() {
+        console.log.apply(console, arguments)
+    }
+    var isEquals = function (a, b, index) {
+        if (JSON.stringify(a) != JSON.stringify(b)) {
+            log(`${index} 测试出错:${a} != ${b}`)
+        } else {log(`${index} 测试成功!`)}
+    }
+
+    var test1 = function() {
+        isEquals(isPrime(2), true, '1-1')
+        isEquals(isPrime(7), true, '1-1')
+        isEquals(isPrime(14), false, '1-1')
+        isEquals(isPrime(39), false, '1-1')
+    }
+    var test2 = function() {
+        isEquals(primeNumbers(), [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97], '2-1')
+    }
+    var test3 = function() {
+        isEquals(capString('i LOve javaSCRIPT so much'), 'I Love Javascript So Much', '3-1')
+    }
+    var test4 = function() {
+        isEquals(letterCount('qweqwea'),[['a',1],['e',2],['q',2],['w',2]], '4-1')
+    }
+    var test5 = function() {
+        var param = {
+            'foo': 1,
+            'bar': 'far',
+        }
+        isEquals(queryFromObject(param), 'foo=1&bar=far', '5-1')
+    }
+    var test6 = function() {
+        var param = {
+            'foo': 'ss',
+            'bar': 'far',
+        }
+        // log(param)
+        isEquals(argsFromQuery('foo=ss&bar=far'), param, '6-1')
+    }
+    var test7 = function() {
+    }
+    var test8 = function() {
+    }
+    var test9 = function() {
+    }
+    var test10 = function() {
+    }
+    var test11 = function() {
+    }
+    var _main = function () {
+        test1()
+        test2()
+        test3()
+        test4()
+        test5()
+        test6()
+        test7()
+        test8()
+        test9()
+        test10()
+        test11()
+    }
+    _main()
+
+
+</script>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <style media="screen">
+            *{
+                /*outline: thin dashed red;*/
+            }
+            .poster-main{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .poster-btn{
+                z-index: 30;
+                height: 100%;
+                width: 50%;
+                text-align: center;
+                color: transparent;
+                font-size: 200px;
+            }
+            .poster-btn:hover{
+                color: lightgray;
+                opacity: 0.5;
+                -webkit-transition: all 1s;
+            }
+            .poster-list{
+                display: flex;
+                position: relative;
+                width: 600px;
+                height: 300px;
+                overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .poster-item{
+                display: inline-block;
+                border: thin solid black;
+                position: absolute;
+                left: 25%;
+                z-index: 20;
+            }
+            .poster-item img{
+                width: 298px;
+                height: 298px;
+            }
+            /*旋转木马*/
+            .prev1{
+                left: -5%;
+                transform: scale(0.8);
+                /*opacity: 0.5;*/
+                z-index: 1;
+            }
+            .next1{
+                left: 55%;
+                transform: scale(0.8);
+                /*opacity: 0.5;*/
+                z-index: 1;
+            }
+            .prev{
+                left: 10%;
+                transform: scale(0.9);
+                /*opacity: 0.7;*/
+                z-index: 10;
+            }
+            .next{
+                left: 40%;
+                transform: scale(0.9);
+                /*opacity: 0.7;*/
+                z-index: 10;
+            }
+            /*横向连续*/
+            .lmxu-prev1{
+                left: -75%;
+                z-index: 1;
+            }
+            .lmxu-next1{
+                left: 125%;
+                z-index: 1;
+            }
+            .lmxu-prev{
+                left: -25%;
+                z-index: 10;
+            }
+            .lmxu-next{
+                left: 75%;
+                z-index: 10;
+            }
+            /*淡入淡出*/
+            .transparent{opacity: 0;}
+            .active{opacity: 1;}
+            /*翻来覆去*/
+            .rotateHide{
+                -webkit-backface-visibility:hidden;
+                transform: rotateY(180deg);
+            }
+            .rotateShow{
+                -webkit-backface-visibility:hidden;
+                transform: rotateY(0deg);
+            }
+            /*发牌模式*/
+            .fp1{
+                border-width: medium;
+                transform: translateX(-190px) translateY(-15px) rotateY(75deg) rotateZ(5deg);
+                z-index: 10
+            }
+            .fp2{
+                transform: translateX(-185px) translateY(-15px) rotateY(75deg) rotateZ(5deg);
+                z-index: 21
+            }
+            .fp3{
+                transform: translateX(180px) translateY(-15px) rotateY(-75deg) rotateZ(-5deg);
+                z-index: 21
+            }
+            .fp4{
+                transform: translateX(185px) translateY(-15px) rotateY(-75deg) rotateZ(-5deg);
+                z-index: 10
+            }
+            /*其他*/
+            .change{
+                -webkit-transition: all .5s;
+            }
+            /*导航点点*/
+            .indicater-cont{
+                display: flex;
+                position: absolute;
+                bottom: 5px;
+                width: 100%;
+                height: 20px;
+                justify-content: center;
+            }
+            .poster-btn:hover, dot:hover{
+                cursor: pointer;
+            }
+            .active-dot{
+                background-color: pink;
+            }
+            dot{
+                display: inline-block;
+                margin: 2px;
+                border-radius: 50%;
+                background-color: lightgray;
+                z-index: 31;
+                text-align: center;
+                width: 20px;
+                height: 20px;
+            }
+            /*模式按钮居中*/
+            .switch{
+                display: flex;
+                justify-content: center;
+            }
+            .switch div{
+                font-size: 3em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="poster-main example" onselectstart="return false">
+            <div class="poster-list">
+                <div class="poster-btn poster-prev-btn"><</div>
+                <div class="poster-btn poster-next-btn">></div>
+                <div class="indicater-cont"></div>
+            </div>
+        </div>
+        <div class="switch">
+            <div class="btn btn-primary swi-btn">切换Carousel模式</div>
+        </div>
+
+<script type="text/javascript">
+    var cs = {
+        current : 0, // 第一张图片
+        mode : 0, // 初始模式
+        intervalTime : 1000, // 延迟时间
+        list : ["img/1.jpg","img/2.jpg", "img/3.jpg", "img/4.jpg", "img/5.jpg"],
+    }
+    with(cs) {
+        cs.count = list.length // 图片总数
+        cs.init = function () {
+            for (let index in this.list) {
+                $('.poster-list').append(`<div class="change poster-item"><img src=${this.list[index]}></div>`)
+                $('.indicater-cont').append(`<dot>${Number(index) + 1}</dot>`)
+            }
+        }
+        cs.preprocess = function (active) {
+            var allClass = 'fp1 fp2 fp3 fp4 active transparent rotateShow rotateHide prev1 prev next next1 lmxu-prev1 lmxu-prev lmxu-next lmxu-next1'
+            $('.poster-item').removeClass(allClass)
+            $('.active-dot').removeClass('active-dot')
+            $($('dot')[active]).addClass('active-dot')
+        }
+        // 旋转木马
+        cs.carousel0 = function (active) {
+            cs.preprocess(active)
+            $('.poster-item').removeClass('newone active transparent')
+            $($('.poster-item')[(active + cs.count - 2) % cs.count]).addClass('prev1')
+            $($('.poster-item')[(active + cs.count - 1) % cs.count]).addClass('prev')
+            $($('.poster-item')[(active + cs.count + 1) % cs.count]).addClass('next')
+            $($('.poster-item')[(active + cs.count + 2) % cs.count]).addClass('next1')
+        }
+        // 横向连续
+        cs.carousel1 = function (active) {
+            cs.preprocess(active)
+            $('.poster-item').removeClass('newone active transparent')
+            $($('.poster-item')[(active + cs.count - 2) % cs.count]).addClass('lmxu-prev1')
+            $($('.poster-item')[(active + cs.count + 2) % cs.count]).addClass('lmxu-next1')
+            $($('.poster-item')[(active + cs.count - 1) % cs.count]).addClass('lmxu-prev')
+            $($('.poster-item')[(active + cs.count + 1) % cs.count]).addClass('lmxu-next')
+        }
+        // 单画渐隐
+        cs.carousel2 = function (active) {
+            cs.preprocess(active)
+            $('.poster-item').addClass('transparent')
+            $('.active').removeClass('active')
+            $($('.poster-item')[active]).addClass('active')
+        }
+        // 卡片翻转
+        cs.carousel3 = function (active) {
+            cs.preprocess(active)
+            $('.poster-item').addClass('rotateHide')
+            $('.rotateShow').removeClass('rotateShow')
+            $($('.poster-item')[active]).addClass('rotateShow')
+        }
+        // 发牌模式
+        cs.carousel4 = function (active) {
+            cs.preprocess(active)
+            $('.poster-item').addClass('fp1')
+            $('.poster-item').removeClass('fp2 fp3 fp4')
+            $($('.poster-item')[(active + 1) % cs.count]).addClass('fp2')
+            $($('.poster-item')[(active + cs.count - 1) % cs.count]).addClass('fp3')
+            $($('.poster-item')[(active + cs.count - 2) % cs.count]).addClass('fp4')
+            $($('.poster-item')[(active)]).removeClass('fp1')
+        }
+
+        cs.setInter = function () {
+            cs.interID = setInterval(function () {
+                cs.current = (cs.current + cs.count + 1) % cs.count
+                cs.carousel(cs.current)
+            }, cs.intervalTime);
+        }
+        cs.bindBtn = function () {
+            $('.poster-prev-btn').on('click', function () {
+                cs.current = (cs.current + cs.count - 1) % cs.count
+                cs.carousel(cs.current)
+            })
+            $('.poster-next-btn').on('click', function () {
+                cs.current = (cs.current + 1) % cs.count
+                cs.carousel(cs.current)
+            })
+        }
+        cs.bindIndic = function () {
+            $('dot').on('click',function () {
+                // console.log(event.target.innerHTML)
+                cs.current = Number(event.target.innerHTML) - 1
+                cs.carousel(cs.current)
+            })
+        }
+        cs.bindSwitch = function () {
+            $('.swi-btn').on('click', cs.swi)
+        }
+        cs.swi = function () {
+            var modelist = [
+                {func:cs.carousel0, name:'旋转木马'},
+                {func:cs.carousel1, name:'横向连续'},
+                {func:cs.carousel2, name:'单画渐隐'},
+                {func:cs.carousel3, name:'卡片翻转'},
+                {func:cs.carousel4, name:'发牌模式'},
+            ]
+            cs.carousel = modelist[cs.mode].func
+            $('.swi-btn').text(modelist[cs.mode].name)
+            cs.mode = (cs.mode + 1) % modelist.length
+            cs.carousel(cs.current)
+        }
+    }
+    var __main = function () {
+        with(cs) {
+            init()
+            swi()
+            bindSwitch()
+            bindBtn()
+            bindIndic()
+            carousel(current)
+            setInter()
+            $('.poster-main').hover(function () {
+                clearInterval(interID)
+            }, setInter)
+        }
+    }
+    __main()
+</script>
+    </body>
+</html>

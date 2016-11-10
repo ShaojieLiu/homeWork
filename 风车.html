@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <style media="screen">
+            .a{
+                width:200px;
+                height:100px;
+                background-color: blue;
+            }
+            .b:hover:after{
+                content: url('img/1.jpg');
+                z-index: 30;
+                position: relative;
+                left:100px;
+            }
+            .b{
+                width:100px;
+                height:200px;
+                background-color: red;
+            }
+            .c{
+                width:100px;
+                height:200px;
+                background-color: yellow;
+                position: relative;
+                bottom: 100px;
+            }
+            .d{
+                width:200px;
+                height:100px;
+                background-color: green;
+                z-index: 10;
+                /*align-self: flex-end;*/
+            }
+            .e{
+                width:100px;
+                height:100px;
+                background-color: black;
+                position: relative;
+                left:100px;
+                bottom:300px;
+            }
+            .content{
+                display: flex;
+                width:300px;
+                height:300px;
+                flex-wrap: wrap;
+                border: thin solid black;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="content">
+            <div class="a"></div>
+            <div class="b"></div>
+            <div class="c"></div>
+            <div class="d"></div>
+            <div class="e"></div>
+        </div>
+
+    </body>
+</html>

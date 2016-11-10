@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <style media="screen">
+            *{
+                border-style: dotted;
+                border-width: thin;
+                margin:5px;
+            }
+            .green {
+                background-color: lightgreen;
+            }
+            .red {
+                background-color: pink;
+            }
+            span{
+                background-color: lightblue;
+            }
+            .yellow {
+                background-color: yellow;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main diuiti">
+            <button type="button" class='butt' name="button">
+                双击我或者我的外面,都看到变黄了,那么恭喜你,<b>十一题</b>对了!
+            </button>
+            <div class="zoye8">甲:当你鼠标在我上面我变绿了,作业8就对了</div>
+            <div class="zoye9">乙:当你点来点去,我变红了,作业9就对了</div>
+            <div>丙:当"作业7"三个字出现在我下面,你就对了</div>
+
+        </div>
+    </body>
+<script src="作业9.js"></script>
+<script type="text/javascript">
+    var log = function() {
+        console.log.apply(console, arguments)
+    }
+    var isEquals = function (a, b, index) {
+        if (JSON.stringify(a) != JSON.stringify(b)) {
+            log(`${index} 测试出错:${a} != ${b}`)
+        } else {log(`${index} 测试成功!`)}
+    }
+
+    var test1 = function() {
+        isEquals(unique([1,2,2,3,4,3]), [1,2,3,4], '1-1')
+        isEquals(unique([1,2,2,5,6,6]), [1,2,5,6], '1-2')
+    }
+    var test2 = function() {
+        isEquals(intersection([1,3,2,2,3,4], [2,2,3,5,6]), [3,2], '2-1')
+        isEquals(intersection([1,2,2,5,6,6], [1,2,3,4,7]), [1,2], '2-2')
+    }
+    var test3 = function() {
+        isEquals(union([1,3,2,2,3,4], [2,2,3,5,6]), [1,3,2,4,5,6], '3-1')
+        isEquals(union([1,2,2,5,6,6], [1,2,3,4,7]), [1,2,5,6,3,4,7], '3-2')
+    }
+    var test4 = function() {
+        isEquals(difference([1,3,2,2,3,4], [2,2,3,5,6]), [1,4], '4-1')
+        isEquals(difference([1,2,2,5,6,6], [1,2,3,4,7]), [5,6], '4-2')
+    }
+    var test5 = function() {
+        isEquals(differenceAll([1,3,2,2,3,4], [2,2,3,5,6]), [1,4,5,6], '5-1')
+        isEquals(differenceAll([1,2,2,5,6,6], [1,2,3,4,7]), [5,6,3,4,7], '5-2')
+    }
+    var test6 = function() {
+        isEquals(isSubset([1,3,2,2,3,4], [2,2,3,5,6]), false, '6-1')
+        isEquals(isSubset([1,2,2,5,6,6], [1,2,3,4,5,6,7]), true, '6-2')
+    }
+    var test7 = function() {
+        var e = document.querySelector('.main')
+        var h = '<span>作业7</span>'
+        appendHtml(e, h)
+    }
+    var test8 = function() {
+        var zoye8 = document.querySelector('.zoye8')
+        var eventName = 'mouseover'
+        var green = function () {zoye8.classList.add('green')}
+        bindEvent(zoye8, eventName, green)
+    }
+    var test9 = function() {
+        var mainDiv = document.querySelector('.main')
+        var eventName = 'click'
+        var red = function () {
+            event.target.classList.add('red')
+        }
+        bindEventDelegate(mainDiv, eventName, red, 'zoye9')
+    }
+    var test10 = function() {
+        var selector = 'div'
+        html = `<span>第十题对了</span>`
+        append(selector, html)
+    }
+    var test11 = function() {
+        var eventName = 'dblclick'
+        var yellow = function () {
+            event.target.classList.add('yellow')
+        }
+        bindAll('div', eventName, yellow)
+        bindAll('div', eventName, yellow, 'butt')
+    }
+    var _main = function () {
+        test1()
+        test2()
+        test3()
+        test4()
+        test5()
+        test6()
+        test7()
+        test8()
+        test9()
+        test10()
+        test11()
+    }
+    _main()
+
+
+</script>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>音频播放器</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://use.fontawesome.com/7c21822d4d.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <style media="screen">
+            /**{outline: thin dotted red;}*/
+            /*body{
+                padding: 20px;
+            }*/
+            .btn{
+                background-color: transparent;
+                border-color: royalblue;
+                width: 35px;
+                margin: 1px;
+                border-radius: 50%;
+            }
+            #play{
+                width: 70px;
+                height: 70px;
+                font-size: 3em;
+                margin-left: 0.5em;
+                margin-right: 0.5em;
+            }
+            .audio{
+                position: relative;
+                text-align: center;
+                border: medium solid royalblue;
+                border-radius: 10px;
+                width: 100%;
+                background-color: rgba(0, 0, 0, 1);;
+            }
+            .slider-cont{
+                display: inline-block;
+                /*outline: thin solid red;*/
+                width: 70%;
+                margin-top: 20px;
+                position: relative;
+            }
+            .slider, .slider-vol{
+                cursor: pointer;
+                /*outline: thin dotted red;*/
+            }
+            .slider{opacity: 0;}
+            .audio span{color: white;}
+            .timeshow{
+                background-color: royalblue;
+                color: white;
+                position: fixed;
+                z-index: 10;
+            }
+            #vol{
+                border: none;
+                /*margin-left: -10px;*/
+            }
+            #menu, #mode{border: none;}
+            .vol-cont{
+                /*width: 25%;*/
+                /*position: absolute;*/
+                /*right: 5px;*/
+                /*outline: thin dotted red;*/
+            }
+            .slider-vol-cont{
+                display: inline-block;
+                position: relative;
+                top: 7px;
+                width: 50px;
+            }
+            .btnArea{
+                justify-content: center;
+                margin-bottom: 5px;
+                display: flex;
+                align-items: center;
+            }
+            .none{display: none;}
+            range{
+                display: block;
+                position: absolute;
+                bottom: 25%;
+                height: 30%;
+                left:2%;
+                width: 96%;
+                border-radius: 3px;
+                background-image: linear-gradient(90deg, red, orange, yellow, green, blue, purple);
+            }
+            .prog{
+                display: block;
+                background-color: dimgray;
+                height: 100%;
+                position: absolute;
+                border-radius: 3px;
+                right: 0;
+                width: 100%;
+                border-left: medium solid white;
+            }
+            .listbtn-cont{
+                /*position: absolute;*/
+                left: 20px;
+            }
+            .songlist{
+                padding-left: 30px;
+                padding-right: 30px;
+                margin-top: -1px;
+                z-index: 100
+            }
+            li{
+                color:rgba(255, 255, 255, 0.68);
+                padding-left:50px;
+                text-align:left;
+                border-top: thin solid darkgray;
+                list-style-type:none;
+                z-index: 0;
+            }
+            .songlist li:hover{
+                cursor: pointer;
+                color:rgba(255, 255, 255, 0.9);
+            }
+            .current{
+                padding: 0;
+                border-top: thin solid white;
+                border-bottom: thin solid white;
+                color: white;
+                font-weight: bolder;
+            }
+            .fa-music{
+                position: absolute;
+                left:50px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="audio">
+            <span class="timeshow none">00:00</span>
+            <audio src="" id="audioPlayer" ></audio>
+            <div class="controls">
+
+                <div class="sliderArea">
+                    <span class="time1">_</span>
+                    <div class="slider-cont">
+                        <range>
+                            <div class=prog></div>
+                        </range>
+                        <input class="slider" type="range" name="name" value=0>
+                    </div>
+                    <span class="time2">_</span>
+                </div>
+
+                <div class="btnArea">
+                    <span class=listbtn-cont>
+                        <span class="btn fa fa-reorder" id="menu"></span>
+                        <span class="btn fa fa-random" id="mode"></span>
+                    </span>
+                    <span class="btn btn-primary fa fa-step-backward" id="prev"></span>
+                    <!-- <span class="btn btn-primary fa fa-backward" id="prev"></span> -->
+                    <span class="btn btn-primary fa fa-play fa-pause" id="play"></span>
+                    <!-- <span class="btn btn-primary fa fa-forward" id="prev"></span> -->
+                    <span class="btn btn-primary fa fa-step-forward" id="next"></span>
+                    <span class="vol-cont">
+                        <span class="btn fa fa-volume-off fa-volume-up" id="vol"></span>
+                        <span class="slider-vol-cont">
+                            <input class="slider-vol" type="range" id="slider-vol" value=10>
+                        </span>
+                    </span>
+                </div>
+
+            </div>
+            <div class=current>当前歌曲: 无</div>
+            <ul class=songlist >
+            </ul>
+        </div>
+<script type="text/javascript">
+    var initAud = function () {
+        var importlist = function() {
+            var song = function ([name,src]){
+                this.src=src;
+                this.name=name;
+            }
+            var givenlist = [
+                ['片头','music/30秒片头音乐.mp3'],
+                ['大野克夫','music/大野克夫.mp3'],
+                ['今夜月','music/今夜月.mp3'],
+                ['光辉岁月','music/光辉.mp3'],
+                ['泡沫','music/泡.mp3'],
+                ['喜欢你','music/喜欢.mp3']
+            ]
+            songlist=[]
+            for (let prop of givenlist) {
+                var songobj = new song(prop)
+                songlist.push(songobj)
+            }
+            console.log(songlist)
+        }
+        var aud = document.querySelector('audio')
+        var timeformat = function (second) {
+            var fill = function (x) {
+                x = String(x)
+                if (x.length < 2) {
+                    return ['0']+x
+                }
+                return x
+            }
+            var min = fill(Math.floor(second / 60))
+            var sec = fill(Math.floor(second % 60))
+            return `${min}:${sec}`
+        }
+        var ctrlSlider = function () {
+            var show = $('.timeshow')
+            var slider = $('.slider')
+            aud.addEventListener('timeupdate',function() {
+                slider.val(100*aud.currentTime/aud.duration)
+                $('.prog').width((100 - slider.val()) / 100 * $('range').width())
+                $('.time1').text(`${timeformat(aud.currentTime)}`)
+                $('.time2').text(`${timeformat(aud.duration)}`)
+                $('.current').text(`CURRENT SONG : ${songlist[currentSong].name}`)
+            })
+            var modeselect = {
+                order: function() {
+                    currentSong = (currentSong + 1) % songlist.length
+                    change()
+                },
+                random: function() {
+                    var rand = Math.floor(Math.random()*(songlist.length - 1)) + 1
+                    console.log(rand)
+                    currentSong = (currentSong + rand) % (songlist.length)
+                    change()
+                }
+            }
+            aud.addEventListener('ended',function () {
+                modeselect[mode]()
+            })
+            // console.log(slider)
+            slider.on('input', function() {
+                // console.log('change')
+                aud.currentTime = this.value / 100 * aud.duration
+            })
+            slider.on('mousemove', function() {
+                // console.log(event,event.clientX,event.clientY)
+                // console.log($('.timeshow').position())
+                show.offset({top: 3, left: event.clientX + document.body.scrollLeft - 20})
+                var progress = (event.clientX + document.body.scrollLeft - $('.slider').offset().left) / $('.slider').width() * aud.duration
+                show.text(timeformat(progress))
+                // console.log(progress)
+            })
+            slider.hover(
+                function(){show.removeClass('none')},
+                function(){show.addClass('none')
+            })
+        }
+        var ctrlBtn = function () {
+            var prev = $('#prev')
+            var next = $('#next')
+            var play = $('#play')
+            var vol = $('.slider-vol')
+            var volbtn = $('#vol')
+            var bw = $('.fa-backward')
+            var fw = $('.fa-forward')
+            var step = 10
+            fw.on('click', function () {
+                aud.currentTime += step
+            })
+            bw.on('click', function () {
+                aud.currentTime -= step
+            })
+            volbtn.on('click', function() {
+                // console.log('volbtn')
+                if (!aud.muted) {
+                    volbtn.removeClass('fa-volume-up')
+                } else {volbtn.addClass('fa-volume-up')}
+                aud.muted = !volbtn.hasClass('fa-volume-up')
+            })
+            vol.on('input', function() {
+                aud.volume = this.value / 100
+            })
+            prev.on('click', function() {
+                currentSong = (currentSong + songlist.length - 1) % songlist.length
+                change()
+            })
+            next.on('click', function() {
+                currentSong = (currentSong + 1) % songlist.length
+                change()
+            })
+            play.on('click', function() {
+                if (!aud.paused) {
+                    $('#play').removeClass('fa-pause')
+                    aud.pause()
+                } else {
+                    $('#play').addClass('fa-pause')
+                    aud.play()}
+            })
+        }
+        var change = function () {
+            aud.src = songlist[currentSong].src
+            $('.songlist li .fa-music').remove()
+            $($('.songlist li')[currentSong]).append(`<span class="fa fa-music"></span>`)
+        }
+        var ctrlist = function () {
+            $('.songlist').on('click', function () {
+                console.log($('.songlist li').index(event.target))
+                currentSong = $('.songlist li').index(event.target)
+                change()
+            })
+            $('#menu').on('click', function () {
+                $('.songlist').toggle()
+            })
+        }
+        // aud.addEventListener('loaded')
+        var initList = function () {
+            $(songlist).map(function(){
+                console.log(this,this.name)
+                $('.songlist').append(`<li>${this.name}</li>`)
+            })
+            console.log($('.songlist li').text())
+        }
+        currentSong = 0
+        mode = `order`
+        importlist()
+        aud.autoplay = true
+        aud.load()
+        aud.volume = $('.slider-vol').val() / 100
+        initList()
+        ctrlSlider()
+        ctrlBtn()
+        ctrlist()
+        change()
+
+
+
+        var player = {
+            init: 0,
+            self: $('audio'),
+            list: [],
+            currentSong: 0,
+            prev: function{
+                    currentSong = (currentSong + songlist.length - 1) % songlist.length
+                    change()
+            }
+        }
+
+
+
+    }
+    initAud()
+</script>
+    </body>
+</html>

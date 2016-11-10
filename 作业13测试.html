@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>gusAlert</title>
+        <style media="screen">
+            *{
+                /*border: 1px solid red;*/
+                border-radius: 5px;
+            }
+            html,body{
+                width: 100%;    height: 100%;
+            }
+            .full{
+                position: fixed;
+                background-color: rgba(0, 0, 0, 0.6);
+                width: 100%;    height: 100%;
+                top: 0;     left: 0;
+            }
+            .none{
+                display: none;
+            }
+            .Center{
+                display: inline-block;
+                position: absolute;
+                top: 50%;
+                left:50%;
+                transform: translateX(-50%) translateY(-50%);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="">
+            <button type="button" class="first Center">弹出弹窗</button>
+        </div>
+<script src="http://code.jquery.com/jquery-2.0.0.min.js"></script>
+<script type="text/javascript">
+    var modelJump = function (buttClass, title, message, option, callback){
+        console.log('called modelJump')
+        var jumpPage = `
+            <div class="full textcenter ">
+                <div class="wind textcenter shadow2 Center">
+                    <h1 class='alertTitt textcenter'>${title}</h1>
+                    <span>${message}</span>
+                    <input type='text'></input>
+                    <div class='opt'></div>
+                    <div class="butt textcenter">
+                        <button type="button" class="but-cancel shadow2">Cancel</button>
+                        <button type="button" class="but-ok shadow2">OK</button>
+                    </div>
+                </div>
+            </div>`
+        var jumpStyle = `
+            <style media="screen">
+                .wind{
+                    width: 300px;    height: auto;
+                    background-color: rgba(28, 109, 193, 0.6);
+                    padding-bottom: 10px;
+                }
+                .shadow2{
+                    box-shadow: 2px 2px 2px 2px;
+                }
+                .alertTitt{
+                    background-color: black;
+                    color: white;
+                    padding: 10px;
+                    margin-top: 0;
+                }
+                .wind span{
+                    color: white;
+                }
+                .select{
+                    display: inline-block;
+                    width: 70%;
+                    margin:5px;
+                }
+                .but-cancel, .but-ok{
+                    padding: 10px;
+                    width: 70px;
+                    margin: 10px;
+                }
+                .textcenter{
+                    text-align: center;
+                }
+            </style>`
+        var createOption = function (index) {
+            return `<button type="button" class="select shadow2" data-index=${index}>${option[index]}</button>`
+        }
+        var createOptions = function () {
+            var result = ''
+            for (var i = 0; i < option.length; i++) {
+                result += createOption(i)
+            }
+            return result
+        }
+        var bondJump = function (){
+            $(`.${buttClass}`).on('click', function(){
+                $('.full').toggle('none')
+                $('.wind input').focus()
+            })
+        }
+        var bondOK = function (){
+            $('.but-ok').on('click', function(){
+                $('.full').toggle('none')
+                console.log($('.wind input'))
+                callback(true, $('.wind input').val())
+            })
+        }
+        var bondCancel = function () {
+            $('.but-cancel').on('click', function(){
+                $('.full').toggle('none')
+                callback(-1)
+            })
+        }
+        var bondOption = function () {
+            $('.opt').on('click', 'button', function () {
+                var index = event.target.dataset.index
+                // console.log(index)
+                $('.full').toggle('none')
+                callback(Number(index), $('.wind input').val())
+            })
+        }
+
+        $('head').append(jumpStyle)
+        $('body').append(jumpPage)
+        $('.opt').append(createOptions())
+        bondJump()
+        // bondOK()
+        bondCancel()
+        bondOption()
+    }
+    var callback = function (isok, input) {
+        if (isok > -1) {
+            console.log(`click ${option[isok]}`, input)
+        } else {
+            console.log('click Cancel')
+        }
+    }
+
+    var option = [`男性`, `女性`, `男性转女`, `女性转男`]
+    var __main = function () {
+        modelJump('first', 'Title', `你的名字是`, option, callback)
+    }
+    __main()
+</script>
+    </body>
+</html>
